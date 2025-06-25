@@ -179,6 +179,20 @@ class SmartASA {
     const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
     await waitForConfirmation(this.algodClient, txId, 4);
   }
+
+  /**
+   * Fetch asset information from the blockchain.
+   * @param assetId The asset ID to fetch info for.
+   * @returns Asset parameters object from the blockchain.
+   */
+  async fetchAssetInfo(assetId: number): Promise<any> {
+    try {
+      const assetInfo = await this.algodClient.getAssetByID(assetId).do();
+      return assetInfo;
+    } catch (error) {
+      throw new Error(`Failed to fetch asset info: ${error}`);
+    }
+  }
 }
 
 export default SmartASA;
