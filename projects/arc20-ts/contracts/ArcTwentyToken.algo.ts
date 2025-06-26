@@ -4,6 +4,8 @@ import {
   waitForConfirmation,
   makeAssetConfigTxnWithSuggestedParamsFromObject,
   makeAssetTransferTxnWithSuggestedParamsFromObject,
+  SuggestedParams,
+  Transaction,
 } from 'algosdk';
 
 // Define error messages
@@ -12,6 +14,29 @@ const err = {
   INVALID_CTRL_ASA: 'Invalid control ASA',
   EXISTING_CTRL_ASA: 'Existing control ASA',
 };
+
+// Type for Algorand asset parameters (based on Algorand REST API)
+export interface AssetParams {
+  creator: string;
+  total: number;
+  decimals: number;
+  defaultFrozen: boolean;
+  unitName: string;
+  name: string;
+  url: string;
+  metadataHash: string;
+  manager: string;
+  reserve: string;
+  freeze: string;
+  clawback: string;
+  [key: string]: unknown; // For any extra fields
+}
+
+// Type for asset info response
+export interface AssetInfo {
+  index: number;
+  params: AssetParams;
+}
 
 class SmartASA {
   algodClient: Algodv2;
@@ -79,9 +104,9 @@ class SmartASA {
   ): Promise<number> {
     if (this.smartAsaId !== 0) throw new Error(err.EXISTING_CTRL_ASA);
 
-    const params = await this.algodClient.getTransactionParams().do();
+    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
 
-    const txn = makeAssetConfigTxnWithSuggestedParamsFromObject({
+    const txn: Transaction = makeAssetConfigTxnWithSuggestedParamsFromObject({
       from: this.manager.addr,
       manager: this.manager.addr,
       reserve: reserveAddr,
@@ -96,7 +121,7 @@ class SmartASA {
     const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
 
     const confirmedTxn = await waitForConfirmation(this.algodClient, txId, 4);
-    const assetId = confirmedTxn['asset-index'];
+    const assetId: number = confirmedTxn['asset-index'];
 
     this.smartAsaId = assetId;
     this.total = total;
@@ -116,9 +141,9 @@ class SmartASA {
   async assetOptIn(assetId: number, account: Account): Promise<void> {
     this.assertCommonPreconditions(assetId);
 
-    const params = await this.algodClient.getTransactionParams().do();
+    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
 
-    const txn = makeAssetTransferTxnWithSuggestedParamsFromObject({
+    const txn: Transaction = makeAssetTransferTxnWithSuggestedParamsFromObject({
       from: account.addr,
       to: account.addr,
       amount: 0,
@@ -132,9 +157,9 @@ class SmartASA {
   }
 
   async assetTransfer(assetId: number, amount: number, sender: Account, receiver: string): Promise<void> {
-    const params = await this.algodClient.getTransactionParams().do();
+    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
 
-    const txn = makeAssetTransferTxnWithSuggestedParamsFromObject({
+    const txn: Transaction = makeAssetTransferTxnWithSuggestedParamsFromObject({
       from: sender.addr,
       to: receiver,
       amount,
@@ -162,9 +187,9 @@ class SmartASA {
   ): Promise<void> {
     this.assertCommonPreconditions(assetId);
 
-    const params = await this.algodClient.getTransactionParams().do();
+    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
 
-    const txn = makeAssetConfigTxnWithSuggestedParamsFromObject({
+    const txn: Transaction = makeAssetConfigTxnWithSuggestedParamsFromObject({
       from: this.manager.addr,
       assetIndex: assetId,
       manager: this.manager.addr,
@@ -185,10 +210,10 @@ class SmartASA {
    * @param assetId The asset ID to fetch info for.
    * @returns Asset parameters object from the blockchain.
    */
-  async fetchAssetInfo(assetId: number): Promise<any> {
+  async fetchAssetInfo(assetId: number): Promise<AssetInfo> {
     try {
       const assetInfo = await this.algodClient.getAssetByID(assetId).do();
-      return assetInfo;
+      return assetInfo as AssetInfo;
     } catch (error) {
       throw new Error(`Failed to fetch asset info: ${error}`);
     }

@@ -55,4 +55,22 @@ export const ERROR_MESSAGES = {
   SELF_MINT: 'Forbidden self minting',
   OVER_MINT: 'Forbidden over minting',
   CLAWBACK_BURN: 'Forbidden clawback burning',
+
+  // Domain-Specific Errors
+  INVALID_ASSET_ID: 'Provided asset ID is invalid or does not exist',
+  ASSET_NOT_FOUND: 'Asset not found on the blockchain',
+  INSUFFICIENT_BALANCE: 'Insufficient balance for this operation',
+  INVALID_ADDRESS: 'Provided address is invalid',
+  TRANSACTION_FAILED: 'Transaction failed to process',
+  NETWORK_ERROR: 'Network error occurred while communicating with Algorand node',
+  INVALID_DECIMALS: 'Decimals value is out of allowed range',
+  INVALID_UNIT_NAME: 'Unit name is invalid or too long',
+  INVALID_METADATA_HASH: 'Metadata hash is invalid or improperly formatted',
+  MANAGER_NOT_SET: 'Manager address is not set',
+  RESERVE_NOT_SET: 'Reserve address is not set',
+  FREEZE_NOT_SET: 'Freeze address is not set',
+  CLAWBACK_NOT_SET: 'Clawback address is not set',
+  ASSET_ALREADY_OPTED_IN: 'Account has already opted in to this asset',
+  ASSET_NOT_OPTED_IN: 'Account has not opted in to this asset',
+  UNEXPECTED_ERROR: 'An unexpected error occurred',
 };
