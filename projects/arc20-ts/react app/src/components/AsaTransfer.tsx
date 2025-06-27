@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import algosdk from 'algosdk';
-import MyAlgoConnect from '@algorandlabs/myalgo-connect';
+import MyAlgoConnect from '@randlabs/myalgo-connect';
 
 const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
 const ASA_ID = 12345678; // Replace with your actual ASA ID

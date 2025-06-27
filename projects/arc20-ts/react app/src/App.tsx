@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
-import { TokenInfo } from './components/AsaInfo';
 import { Wallet } from './components/Wallet';
-import { TokenTransfer } from './components/AsaTransfer';
+import { AsaInfo } from './components/ASAInfo';
+import { AsaTransfer } from './components/AsaTransfer';
+import { BalanceDisplay } from './components/BalanceDisplay';
+import { OptInButton } from './components/OptInButton';
 
 function App() {
   const [address, setAddress] = useState('');
 
   return (
     <div className="min-h-screen p-6 bg-white text-gray-900">
-      <h1 className="text-3xl font-bold mb-4">ARC20 Token Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-4">ASA Token Dashboard</h1>
       <Wallet onConnect={setAddress} />
       {address && (
         <>
-          <TokenInfo />
-          <TokenTransfer sender={address} />
+          <BalanceDisplay address={address} />
+          <OptInButton sender={address} />
+          <AsaTransfer sender={address} />
         </>
       )}
+      <AsaInfo />
     </div>
   );
 }
