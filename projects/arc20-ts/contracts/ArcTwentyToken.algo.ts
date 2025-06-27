@@ -8,6 +8,8 @@ import {
   Transaction,
 } from 'algosdk';
 
+import algosdk from 'algosdk';
+
 // Define error messages
 const err = {
   MISSING_CTRL_ASA: 'Missing control ASA',
@@ -218,6 +220,173 @@ class SmartASA {
       throw new Error(`Failed to fetch asset info: ${error}`);
     }
   }
+
+  /**
+   * Destroy the asset (must be called by the manager).
+   * @param assetId The asset ID to destroy.
+   */
+  async destroyAsset(assetId: number): Promise<void> {
+    this.assertCommonPreconditions(assetId);
+
+    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
+
+    const txn: Transaction = makeAssetConfigTxnWithSuggestedParamsFromObject({
+      from: this.manager.addr,
+      assetIndex: assetId,
+      manager: '',
+      reserve: '',
+      freeze: '',
+      clawback: '',
+      strictEmptyAddressChecking: false,
+      suggestedParams: params,
+    });
+
+    const signedTxn = txn.signTxn(this.manager.sk);
+    const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
+    await waitForConfirmation(this.algodClient, txId, 4);
+    this.smartAsaId = 0;
+  }
+
+  /**
+   * Freeze an account's asset holding.
+   * @param assetId The asset ID.
+   * @param targetAddr The address to freeze.
+   */
+  async freezeAsset(assetId: number, targetAddr: string): Promise<void> {
+    this.assertCommonPreconditions(assetId);
+
+    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
+
+    const txn = algosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject({
+      from: this.freeze,
+      assetIndex: assetId,
+      freezeTarget: targetAddr,
+      freezeState: true,
+      suggestedParams: params,
+    });
+
+    // You need to provide the freeze account's secret key to sign the transaction.
+    // For now, this is left as a placeholder.
+    // const signedTxn = txn.signTxn(freezeAccount.sk);
+    // const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
+    // await waitForConfirmation(this.algodClient, txId, 4);
+  }
+
+  /**
+   * Unfreeze an account's asset holding.
+   * @param assetId The asset ID.
+   * @param targetAddr The address to unfreeze.
+   */
+  async unfreezeAsset(assetId: number, targetAddr: string): Promise<void> {
+    this.assertCommonPreconditions(assetId);
+
+    const txn = algosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject({
+      from: this.freeze,
+      assetIndex: assetId,
+      freezeTarget: targetAddr,
+      freezeState: false,
+      suggestedParams: params,
+    });
+
+    // You need to provide the freeze account's secret key to sign the transaction.
+    // For now, this is left as a placeholder.
+    // const signedTxn = txn.signTxn(freezeAccount.sk);
+    // const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
+    // await waitForConfirmation(this.algodClient, txId, 4);
+    const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
+    await waitForConfirmation(this.algodClient, txId, 4);
+  /**
+   * Change the manager address for the asset.
+   * @param assetId The asset ID.
+   * @param newManager The new manager account.
+   */
+  async changeManager(
+    assetId: number,
+    newManager: Account,
+    reserveAddr: string,
+    freezeAddr: string,
+    clawbackAddr: string
+  ): Promise<void> {
+    this.assertCommonPreconditions(assetId);
+
+    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
+
+    const txn: Transaction = makeAssetConfigTxnWithSuggestedParamsFromObject({
+      from: this.manager.addr,
+      assetIndex: assetId,
+      manager: newManager.addr,
+      reserve: reserveAddr,
+      freeze: freezeAddr,
+      clawback: clawbackAddr,
+      suggestedParams: params,
+      strictEmptyAddressChecking: false,
+    });
+
+    const signedTxn = txn.signTxn(this.manager.sk);
+    const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
+    await waitForConfirmation(this.algodClient, txId, 4);
+
+    this.manager = newManager;
+    this.reserve = reserveAddr;
+    this.freeze = freezeAddr;
+    this.clawback = clawbackAddr;
+  }
+
+  /**
+   * Check if an account has opted in to the asset.
+   * @param assetId The asset ID.
+   * @param address The address to check.
+   * @returns True if opted in, false otherwise.
+   */
+  async hasOptedIn(assetId: number, address: string): Promise<boolean> {
+    try {
+      const accountInfo = await this.algodClient.accountInformation(address).do();
+      return (accountInfo.assets || []).some((a: { 'asset-id': number }) => a['asset-id'] === assetId);
+    } catch {
+      return false;
+    }
+  }
 }
 
 export default SmartASA;
+  // This function is not needed because changeManager is already implemented as a method in the SmartASA class above.
+  // If you want a standalone function (not a class method), you could implement it like this:
+
+
+  /**
+   * Change the manager address for an Algorand asset.
+   * @param algodClient The Algodv2 client instance.
+   * @param assetId The asset ID.
+   * @param currentManager The current manager account.
+   * @param newManagerAddr The new manager address.
+   * @param reserveAddr The reserve address.
+   * @param freezeAddr The freeze address.
+   * @param clawbackAddr The clawback address.
+   */
+  async function changeManager(
+    algodClient: Algodv2,
+    assetId: number,
+    currentManager: Account,
+    newManagerAddr: string,
+    reserveAddr: string,
+    freezeAddr: string,
+    clawbackAddr: string
+  ): Promise<void> {
+    const params: SuggestedParams = await algodClient.getTransactionParams().do();
+
+    const txn: Transaction = makeAssetConfigTxnWithSuggestedParamsFromObject({
+      from: currentManager.addr,
+      assetIndex: assetId,
+      manager: newManagerAddr,
+      reserve: reserveAddr,
+      freeze: freezeAddr,
+      clawback: clawbackAddr,
+      suggestedParams: params,
+      strictEmptyAddressChecking: false,
+    });
+
+    const signedTxn = txn.signTxn(currentManager.sk);
+    const { txId } = await algodClient.sendRawTransaction(signedTxn).do();
+    await waitForConfirmation(algodClient, txId, 4);
+  }
+
