@@ -3,13 +3,13 @@ import algosdk from 'algosdk';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 
 const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
-const ASA_ID = 2320775407; // Replace with your actual ASA ID
 
 interface Props {
   sender: string;
+  asaId: number;
 }
 
-export const AsaTransfer: React.FC<Props> = ({ sender }) => {
+export const AsaTransfer: React.FC<Props> = ({ sender, asaId }) => {
   const [receiver, setReceiver] = useState('');
   const [amount, setAmount] = useState('');
   const [status, setStatus] = useState('');
@@ -25,7 +25,7 @@ export const AsaTransfer: React.FC<Props> = ({ sender }) => {
         from: sender,
         to: receiver,
         amount: Number(amount),
-        assetIndex: ASA_ID,
+        assetIndex: asaId,
         suggestedParams: params,
       });
 
@@ -66,6 +66,4 @@ export const AsaTransfer: React.FC<Props> = ({ sender }) => {
         Send Tokens
       </button>
       {status && <p className="mt-2 text-sm">{status}</p>}
-    </div>
-  );
-};
+    </div>)}
