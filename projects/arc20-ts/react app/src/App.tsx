@@ -8,7 +8,7 @@ import { OptInStatus } from './components/OptInStatus';
 import { TransactionHistory } from './components/TransactionHistory';
 import { AsaInput } from './components/AsaInput';
 import { ClawbackTransfer } from './components/ClawbackTransfer';
-import { DestroyAsa } from './components/DestroyAsa'; // Add this import
+import { DestroyAsa } from './components/DestroyAsa'; 
 
 function App() {
   const [address, setAddress] = useState('');
