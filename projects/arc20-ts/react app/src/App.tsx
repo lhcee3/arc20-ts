@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Wallet, TrendingUp, Shield, Zap, ArrowRight, Github, Twitter, Send, Eye, History, Settings, Trash2, Lock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Wallet, TrendingUp, Shield, Zap, Github, Twitter, Lock } from 'lucide-react';
 import { Wallet as WalletComponent } from './components/Wallet';
 import { AsaInfo } from './components/AsaInfo';
 import { AsaTransfer } from './components/AsaTransfer';
@@ -11,7 +11,16 @@ import { AsaInput } from './components/AsaInput';
 import { ClawbackTransfer } from './components/ClawbackTransfer';
 import { DestroyAsa } from './components/DestroyAsa';
 
-const FeatureCard = ({ icon: Icon, title, description, gradient }) => (
+import { FC } from 'react';
+
+type FeatureCardProps = {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  title: string;
+  description: string;
+  gradient: string;
+};
+
+const FeatureCard: FC<FeatureCardProps> = ({ icon: Icon, title, description, gradient }) => (
   <div className={`bg-gradient-to-br ${gradient} p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2`}>
     <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mb-4">
       <Icon size={32} className="text-white" />
