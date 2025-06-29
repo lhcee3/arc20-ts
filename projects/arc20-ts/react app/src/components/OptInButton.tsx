@@ -3,9 +3,13 @@ import algosdk from 'algosdk';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 
 const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
-const ASA_ID = 2320775407;
 
-export const OptInButton = ({ sender }: { sender: string }) => {
+interface Props {
+  sender: string;
+  asaId: number;
+}
+
+export const OptInButton: React.FC<Props> = ({ sender, asaId }) => {
   const [status, setStatus] = useState('');
 
   const optIn = async () => {
@@ -17,7 +21,7 @@ export const OptInButton = ({ sender }: { sender: string }) => {
         from: sender,
         to: sender,
         amount: 0,
-        assetIndex: ASA_ID,
+        assetIndex: asaId,
         suggestedParams: params,
       });
 
