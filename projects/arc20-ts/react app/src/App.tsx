@@ -30,7 +30,13 @@ const FeatureCard: FC<FeatureCardProps> = ({ icon: Icon, title, description, gra
   </div>
 );
 
-const SectionCard = ({ title, children, className = "" }) => (
+type SectionCardProps = {
+  title: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+};
+
+const SectionCard: React.FC<SectionCardProps> = ({ title, children, className = "" }) => (
   <div className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-6 ${className}`}>
     <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
       {title}
@@ -44,8 +50,8 @@ function App() {
   const [asaId, setAsaId] = useState('');
   const [isClawback, setIsClawback] = useState(false);
   const [isManager, setIsManager] = useState(false);
-  const [managerAddress, setManagerAddress] = useState('');
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [, setManagerAddress] = useState('');
+  // Removed unused activeSection state
 
   const parsedAsaId = parseInt(asaId);
 
@@ -60,11 +66,9 @@ function App() {
         // Fetch ASA info to get manager address
         const algod = new (await import('algosdk')).Algodv2('', 'https://testnet-api.algonode.cloud', '');
         const asset = await algod.getAssetByID(parsedAsaId).do();
-        setManagerAddress(asset.params.manager);
         setIsManager(asset.params.manager === address);
       } catch {
         setIsManager(false);
-        setManagerAddress('');
       }
     }
     fetchManager();
