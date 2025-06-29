@@ -128,9 +128,15 @@ function App() {
             >
               <Github size={20} className="text-white" />
             </button>
-            <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition-all duration-300 hover:scale-110">
+            <a
+              href="https://x.com/lhcee3"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition-all duration-300 hover:scale-110"
+              title="View on X (Twitter)"
+            >
               <Twitter size={20} className="text-white" />
-            </button>
+            </a>
           </div>
         </header>
 
