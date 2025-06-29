@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Wallet } from './components/Wallet';
-import { AsaInfo } from './components/ASAInfo';
+import { AsaInfo } from './components/AsaInfo';
 import { AsaTransfer } from './components/AsaTransfer';
 import { BalanceDisplay } from './components/BalanceDisplay';
 import { OptInButton } from './components/OptInButton';
