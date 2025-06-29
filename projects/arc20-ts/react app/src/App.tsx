@@ -121,7 +121,12 @@ function App() {
             Your comprehensive dashboard for managing Algorand Standard Assets with TypeScript precision
           </p>
           <div className="flex justify-center gap-4 mt-6">
-            <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition-all duration-300 hover:scale-110">
+            <button
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition-all duration-300 hover:scale-110"
+              as="a"
+              onClick={() => window.open('https://github.com/lhcee3/arc20-ts', '_blank')}
+              title="View on GitHub"
+            >
               <Github size={20} className="text-white" />
             </button>
             <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition-all duration-300 hover:scale-110">
