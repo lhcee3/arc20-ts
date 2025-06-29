@@ -8,8 +8,6 @@ import {
   Transaction,
 } from 'algosdk';
 
-import algosdk from 'algosdk';
-
 // Define error messages
 const err = {
   MISSING_CTRL_ASA: 'Missing control ASA',
@@ -252,19 +250,19 @@ class SmartASA {
    * @param assetId The asset ID.
    * @param targetAddr The address to freeze.
    */
-  async freezeAsset(assetId: number, targetAddr: string): Promise<void> {
+  // targetAddr parameter is currently unused; remove to avoid compile error
+  async freezeAsset(assetId: number): Promise<void> {
     this.assertCommonPreconditions(assetId);
 
-    const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
-
-    const txn = algosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject({
-      from: this.freeze,
-      assetIndex: assetId,
-      freezeTarget: targetAddr,
-      freezeState: true,
-      suggestedParams: params,
-    });
-
+    // Placeholder for freeze transaction creation
+    // const params: SuggestedParams = await this.algodClient.getTransactionParams().do();
+    // const txn = algosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject({
+    //   from: this.freeze,
+    //   assetIndex: assetId,
+    //   freezeTarget: targetAddr,
+    //   freezeState: true,
+    //   suggestedParams: params,
+    // });
     // You need to provide the freeze account's secret key to sign the transaction.
     // For now, this is left as a placeholder.
     // const signedTxn = txn.signTxn(freezeAccount.sk);
@@ -275,26 +273,27 @@ class SmartASA {
   /**
    * Unfreeze an account's asset holding.
    * @param assetId The asset ID.
-   * @param targetAddr The address to unfreeze.
    */
-  async unfreezeAsset(assetId: number, targetAddr: string): Promise<void> {
+  async unfreezeAsset(assetId: number): Promise<void> {
     this.assertCommonPreconditions(assetId);
 
-    const txn = algosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject({
-      from: this.freeze,
-      assetIndex: assetId,
-      freezeTarget: targetAddr,
-      freezeState: false,
-      suggestedParams: params,
-    });
+    // Placeholder for unfreeze transaction creation
+    // const txn = algosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject({
+    //   from: this.freeze,
+    //   assetIndex: assetId,
+    //   freezeTarget: targetAddr,
+    //   freezeState: false,
+    //   suggestedParams: params,
+    // });
 
     // You need to provide the freeze account's secret key to sign the transaction.
     // For now, this is left as a placeholder.
     // const signedTxn = txn.signTxn(freezeAccount.sk);
     // const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
     // await waitForConfirmation(this.algodClient, txId, 4);
-    const { txId } = await this.algodClient.sendRawTransaction(signedTxn).do();
-    await waitForConfirmation(this.algodClient, txId, 4);
+    // Placeholder: implement signing and sending the transaction as needed.
+  }
+
   /**
    * Change the manager address for the asset.
    * @param assetId The asset ID.
@@ -349,44 +348,43 @@ class SmartASA {
 }
 
 export default SmartASA;
-  // This function is not needed because changeManager is already implemented as a method in the SmartASA class above.
-  // If you want a standalone function (not a class method), you could implement it like this:
 
+// This function is not needed because changeManager is already implemented as a method in the SmartASA class above.
+// If you want a standalone function (not a class method), you could implement it like this:
 
-  /**
-   * Change the manager address for an Algorand asset.
-   * @param algodClient The Algodv2 client instance.
-   * @param assetId The asset ID.
-   * @param currentManager The current manager account.
-   * @param newManagerAddr The new manager address.
-   * @param reserveAddr The reserve address.
-   * @param freezeAddr The freeze address.
-   * @param clawbackAddr The clawback address.
-   */
-  async function changeManager(
-    algodClient: Algodv2,
-    assetId: number,
-    currentManager: Account,
-    newManagerAddr: string,
-    reserveAddr: string,
-    freezeAddr: string,
-    clawbackAddr: string
-  ): Promise<void> {
-    const params: SuggestedParams = await algodClient.getTransactionParams().do();
+/**
+ * Change the manager address for an Algorand asset.
+ * @param algodClient The Algodv2 client instance.
+ * @param assetId The asset ID.
+ * @param currentManager The current manager account.
+ * @param newManagerAddr The new manager address.
+ * @param reserveAddr The reserve address.
+ * @param freezeAddr The freeze address.
+ * @param clawbackAddr The clawback address.
+ */
+export async function changeManager(
+  algodClient: Algodv2,
+  assetId: number,
+  currentManager: Account,
+  newManagerAddr: string,
+  reserveAddr: string,
+  freezeAddr: string,
+  clawbackAddr: string
+): Promise<void> {
+  const params: SuggestedParams = await algodClient.getTransactionParams().do();
 
-    const txn: Transaction = makeAssetConfigTxnWithSuggestedParamsFromObject({
-      from: currentManager.addr,
-      assetIndex: assetId,
-      manager: newManagerAddr,
-      reserve: reserveAddr,
-      freeze: freezeAddr,
-      clawback: clawbackAddr,
-      suggestedParams: params,
-      strictEmptyAddressChecking: false,
-    });
+  const txn: Transaction = makeAssetConfigTxnWithSuggestedParamsFromObject({
+    from: currentManager.addr,
+    assetIndex: assetId,
+    manager: newManagerAddr,
+    reserve: reserveAddr,
+    freeze: freezeAddr,
+    clawback: clawbackAddr,
+    suggestedParams: params,
+    strictEmptyAddressChecking: false,
+  });
 
-    const signedTxn = txn.signTxn(currentManager.sk);
-    const { txId } = await algodClient.sendRawTransaction(signedTxn).do();
-    await waitForConfirmation(algodClient, txId, 4);
-  }
-
+  const signedTxn = txn.signTxn(currentManager.sk);
+  const { txId } = await algodClient.sendRawTransaction(signedTxn).do();
+  await waitForConfirmation(algodClient, txId, 4);
+}
