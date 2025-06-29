@@ -2,18 +2,22 @@ import React, { useEffect, useState } from 'react';
 import algosdk from 'algosdk';
 
 const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
-const ASA_ID = 2320775407;
 
-export const BalanceDisplay = ({ address }: { address: string }) => {
+interface Props {
+  address: string;
+  asaId: number;
+}
+
+export const BalanceDisplay: React.FC<Props> = ({ address, asaId }) => {
   const [balance, setBalance] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchBalance() {
       try {
         const account = await algod.accountInformation(address).do();
-        const asset = account.assets.find((a: any) => a['asset-id'] === ASA_ID);
+        const asset = account.assets.find((a: any) => a['asset-id'] === asaId);
         if (asset) {
-          const assetInfo = await algod.getAssetByID(ASA_ID).do();
+          const assetInfo = await algod.getAssetByID(asaId).do();
           const decimals = assetInfo.params.decimals;
           setBalance(asset.amount / Math.pow(10, decimals));
         } else {
@@ -24,12 +28,12 @@ export const BalanceDisplay = ({ address }: { address: string }) => {
         setBalance(null);
       }
     }
-    fetchBalance();
-  }, [address]);
+    if (address && asaId) {
+      fetchBalance();
+    }
+  }, [address, asaId]);
 
   return (
     <div className="mt-4 text-lg">
       <strong>Balance:</strong> {balance !== null ? balance : 'Loading...'}
-    </div>
-  );
-};
+    </div>)}
