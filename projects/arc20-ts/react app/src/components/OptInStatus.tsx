@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import algosdk from 'algosdk';
 
 const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
-const ASA_ID = 12345678; // Replace with your actual ASA ID
 
-export const OptInStatus = ({ address }: { address: string }) => {
+interface Props {
+  address: string;
+  asaId: number;
+}
+
+export const OptInStatus: React.FC<Props> = ({ address, asaId }) => {
   const [optedIn, setOptedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function checkOptIn() {
       try {
         const account = await algod.accountInformation(address).do();
-        const asset = account.assets.find((a: any) => a['asset-id'] === ASA_ID);
+        const asset = account.assets.find((a: any) => a['asset-id'] === asaId);
         setOptedIn(!!asset);
       } catch (err) {
         console.error('Opt-in check error:', err);
@@ -19,8 +23,10 @@ export const OptInStatus = ({ address }: { address: string }) => {
       }
     }
 
-    checkOptIn();
-  }, [address]);
+    if (address && asaId) {
+      checkOptIn();
+    }
+  }, [address, asaId]);
 
   return (
     <div className="mt-4">
@@ -32,6 +38,4 @@ export const OptInStatus = ({ address }: { address: string }) => {
       ) : (
         <span className="text-red-600 font-semibold">❌ Not Opted In</span>
       )}
-    </div>
-  );
-};
+    </div>)}
