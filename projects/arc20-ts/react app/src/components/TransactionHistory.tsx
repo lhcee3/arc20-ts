@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const INDEXER_BASE = 'https://testnet-idx.algonode.cloud';
-const ASA_ID = 2320775407;
 
 interface Txn {
   id: string;
@@ -13,18 +12,24 @@ interface Txn {
   amount: number;
 }
 
-export const TransactionHistory = ({ address }: { address: string }) => {
+interface Props {
+  address: string;
+  asaId: number;
+}
+
+export const TransactionHistory: React.FC<Props> = ({ address, asaId }) => {
   const [txns, setTxns] = useState<Txn[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchTxns() {
+      setLoading(true);
       try {
         const res = await axios.get(
           `${INDEXER_BASE}/v2/accounts/${address}/transactions`,
           {
             params: {
-              asset_id: ASA_ID,
+              asset_id: asaId,
               limit: 5,
               'tx-type': 'axfer',
             },
@@ -48,8 +53,10 @@ export const TransactionHistory = ({ address }: { address: string }) => {
       }
     }
 
-    fetchTxns();
-  }, [address]);
+    if (address && asaId) {
+      fetchTxns();
+    }
+  }, [address, asaId]);
 
   return (
     <div className="mt-6 p-4 bg-gray-100 rounded shadow-md max-w-2xl">
@@ -62,11 +69,11 @@ export const TransactionHistory = ({ address }: { address: string }) => {
         <ul className="space-y-2">
           {txns.map((tx) => (
             <li key={tx.id} className="text-sm border-b pb-1">
-              <strong>From:</strong> {tx.sender.slice(0, 6)}... → <strong>To:</strong> {tx.receiver.slice(0, 6)}...  
+              <strong>From:</strong> {tx.sender.slice(0, 6)}... → <strong>To:</strong> {tx.receiver.slice(0, 6)}...
               <br />
-              <strong>Amount:</strong> {tx.amount}  
+              <strong>Amount:</strong> {tx.amount}
               <br />
-              <strong>Round:</strong> {tx.round}  
+              <strong>Round:</strong> {tx.round}
               <br />
               <a
                 href={`https://testnet.algoexplorer.io/tx/${tx.id}`}
