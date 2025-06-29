@@ -1,6 +1,7 @@
-import { Algodv2, SuggestedParams, Transaction } from 'algosdk';
+/* eslint-disable prettier/prettier */
+import { Algodv2, SuggestedParams, Transaction, Account } from 'algosdk';
 import SmartASA from '../contracts/ArcTwentyToken.algo';
-import { Account } from 'algosdk';
+import { describe, it, expect, jest } from '@jest/globals';
 
 const dummyParams: SuggestedParams = {
   fee: 1000,
@@ -57,23 +58,11 @@ describe('SmartASA', () => {
       signTxn: jest.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
     } as unknown as Transaction;
 
-    jest.spyOn(require('algosdk'), 'makeAssetConfigTxnWithSuggestedParamsFromObject')
-      .mockReturnValue(fakeTxn);
+    jest.spyOn(require('algosdk'), 'makeAssetConfigTxnWithSuggestedParamsFromObject').mockReturnValue(fakeTxn);
 
-    jest.spyOn(require('algosdk'), 'waitForConfirmation')
-      .mockResolvedValue({ 'asset-index': 9999 });
+    jest.spyOn(require('algosdk'), 'waitForConfirmation').mockResolvedValue({ 'asset-index': 9999 });
 
-    const id = await smartAsa.assetCreate(
-      1000000,
-      0,
-      false,
-      'TKN',
-      'TestToken',
-      '',
-      '',
-      '',
-      ''
-    );
+    const id = await smartAsa.assetCreate(1000000, 0, false, 'TKN', 'TestToken', '', '', '', '');
 
     expect(id).toBe(9999);
     expect(smartAsa.smartAsaId).toBe(9999);
