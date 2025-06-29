@@ -7,11 +7,12 @@ import { OptInButton } from './components/OptInButton';
 import { OptInStatus } from './components/OptInStatus';
 import { TransactionHistory } from './components/TransactionHistory';
 import { AsaInput } from './components/AsaInput';
-
+import { ClawbackTransfer } from './components/ClawbackTransfer'; 
 
 function App() {
   const [address, setAddress] = useState('');
   const [asaId, setAsaId] = useState('');
+  const [isClawback, setIsClawback] = useState(false); 
 
   const parsedAsaId = parseInt(asaId);
 
@@ -22,6 +23,15 @@ function App() {
       <Wallet onConnect={setAddress} />
       <AsaInput asaId={asaId} setAsaId={setAsaId} />
 
+      <div className="mb-4">
+        <label className="mr-2 font-semibold">Clawback Mode</label>
+        <input
+          type="checkbox"
+          checked={isClawback}
+          onChange={() => setIsClawback((prev) => !prev)}
+        />
+      </div>
+
       {address && !isNaN(parsedAsaId) && (
         <>
           <BalanceDisplay address={address} asaId={parsedAsaId} />
@@ -30,6 +40,9 @@ function App() {
           <AsaTransfer sender={address} asaId={parsedAsaId} />
           <TransactionHistory address={address} asaId={parsedAsaId} />
         </>
+      )}
+      {isClawback && (
+        <ClawbackTransfer asaId={parsedAsaId} clawbackAddress={address} />
       )}
 
       {!isNaN(parsedAsaId) && <AsaInfo asaId={parsedAsaId} />}
