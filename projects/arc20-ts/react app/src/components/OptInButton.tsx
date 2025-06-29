@@ -3,7 +3,7 @@ import algosdk from 'algosdk';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 
 const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
-const ASA_ID = 12345678;
+const ASA_ID = 2320775407;
 
 export const OptInButton = ({ sender }: { sender: string }) => {
   const [status, setStatus] = useState('');

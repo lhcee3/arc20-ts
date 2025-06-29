@@ -2,18 +2,29 @@ import React, { useEffect, useState } from 'react';
 import algosdk from 'algosdk';
 
 const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
-const ASA_ID = 12345678; // Replace with your actual ASA ID
 
-export const AsaInfo = () => {
+interface Props {
+  asaId: number;
+}
+
+export const AsaInfo: React.FC<Props> = ({ asaId }) => {
   const [info, setInfo] = useState<any>(null);
 
   useEffect(() => {
+    if (!asaId) {
+      setInfo(null);
+      return;
+    }
     async function fetchAsset() {
-      const asset = await algod.getAssetByID(ASA_ID).do();
-      setInfo(asset.params);
+      try {
+        const asset = await algod.getAssetByID(asaId).do();
+        setInfo(asset.params);
+      } catch {
+        setInfo(null);
+      }
     }
     fetchAsset();
-  }, []);
+  }, [asaId]);
 
   return (
     <div className="p-4 bg-gray-100 rounded shadow-md w-fit mt-4">

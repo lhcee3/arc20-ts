@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "arc20-ts",
+  "name": "ARC 20 Use Case",
   "icons": [
     {
       "src": "favicon.ico",
