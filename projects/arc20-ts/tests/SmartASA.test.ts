@@ -23,9 +23,11 @@ describe('SmartASA', () => {
   beforeEach(() => {
     mockAlgod = {
       getTransactionParams: jest.fn().mockReturnValue({
-        do: jest.fn((): Promise<SuggestedParams> => Promise.resolve(dummyParams)),
-      }) as unknown as ReturnType<Algodv2['getTransactionParams']>,
-      sendRawTransaction: jest.fn().mockResolvedValue({ txId: 'ABC123' }),
+        do: jest.fn().mockResolvedValue(dummyParams),
+      }),
+      sendRawTransaction: jest.fn().mockReturnValue({
+        do: jest.fn().mockResolvedValue({ txId: 'ABC123' }),
+      }),
       getAssetByID: jest.fn().mockReturnValue({
         do: jest.fn().mockResolvedValue({
           index: 1234,
@@ -47,7 +49,7 @@ describe('SmartASA', () => {
       }),
     };
 
-    smartAsa = new SmartASA(mockAlgod as Algodv2, dummyAccount);
+    smartAsa = new SmartASA(mockAlgod as unknown as Algodv2, dummyAccount);
   };
 
   it('should initialize with default values', () => {
