@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
 import { Algodv2, SuggestedParams, Transaction, Account } from 'algosdk';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import SmartASA from '../contracts/ArcTwentyToken.algo';
-import { describe, it, expect, jest } from '@jest/globals';
 
 const dummyParams: SuggestedParams = {
   fee: 1000,
@@ -23,29 +22,33 @@ describe('SmartASA', () => {
 
   beforeEach(() => {
     mockAlgod = {
-      getTransactionParams: jest.fn().mockResolvedValue(dummyParams),
+      getTransactionParams: jest.fn().mockReturnValue({
+        do: jest.fn((): Promise<SuggestedParams> => Promise.resolve(dummyParams)),
+      }) as unknown as ReturnType<Algodv2['getTransactionParams']>,
       sendRawTransaction: jest.fn().mockResolvedValue({ txId: 'ABC123' }),
-      getAssetByID: jest.fn().mockResolvedValue({
-        index: 1234,
-        params: {
-          creator: 'SOME_MANAGER_ADDRESS',
-          total: 1000,
-          decimals: 0,
-          defaultFrozen: false,
-          unitName: 'TEST',
-          name: 'TestToken',
-          url: '',
-          metadataHash: '',
-          manager: 'SOME_MANAGER_ADDRESS',
-          reserve: '',
-          freeze: '',
-          clawback: '',
-        },
+      getAssetByID: jest.fn().mockReturnValue({
+        do: jest.fn().mockResolvedValue({
+          index: 1234,
+          params: {
+            creator: 'SOME_MANAGER_ADDRESS',
+            total: 1000,
+            decimals: 0,
+            defaultFrozen: false,
+            unitName: 'TEST',
+            name: 'TestToken',
+            url: '',
+            metadataHash: '',
+            manager: 'SOME_MANAGER_ADDRESS',
+            reserve: '',
+            freeze: '',
+            clawback: '',
+          },
+        }),
       }),
     };
 
     smartAsa = new SmartASA(mockAlgod as Algodv2, dummyAccount);
-  });
+  };
 
   it('should initialize with default values', () => {
     expect(smartAsa.smartAsaId).toBe(0);
