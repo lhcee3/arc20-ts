@@ -10,6 +10,7 @@ import { TransactionHistory } from './components/TransactionHistory';
 import { AsaInput } from './components/AsaInput';
 import { ClawbackTransfer } from './components/ClawbackTransfer';
 import { DestroyAsa } from './components/DestroyAsa';
+import './App.css';
 
 import { FC } from 'react';
 
@@ -21,12 +22,12 @@ type FeatureCardProps = {
 };
 
 const FeatureCard: FC<FeatureCardProps> = ({ icon: Icon, title, description, gradient }) => (
-  <div className={`bg-gradient-to-br ${gradient} p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2`}>
-    <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+  <div className={`feature-card ${gradient}`}>
+    <div className="feature-icon">
       <Icon size={32} className="text-white" />
     </div>
-    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-    <p className="text-white/80 leading-relaxed">{description}</p>
+    <h3 className="feature-title">{title}</h3>
+    <p className="feature-description">{description}</p>
   </div>
 );
 
@@ -37,11 +38,13 @@ type SectionCardProps = {
 };
 
 const SectionCard: React.FC<SectionCardProps> = ({ title, children, className = "" }) => (
-  <div className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-6 ${className}`}>
-    <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
+  <div className={`section-card ${className}`}>
+    <h3 className="section-title">
       {title}
     </h3>
-    {children}
+    <div className="section-content">
+      {children}
+    </div>
   </div>
 );
 
@@ -51,7 +54,6 @@ function App() {
   const [isClawback, setIsClawback] = useState(false);
   const [isManager, setIsManager] = useState(false);
   const [, setManagerAddress] = useState('');
-  // Removed unused activeSection state
 
   const parsedAsaId = parseInt(asaId);
 
@@ -66,9 +68,11 @@ function App() {
         // Fetch ASA info to get manager address
         const algod = new (await import('algosdk')).Algodv2('', 'https://testnet-api.algonode.cloud', '');
         const asset = await algod.getAssetByID(parsedAsaId).do();
+        setManagerAddress(asset.params.manager);
         setIsManager(asset.params.manager === address);
       } catch {
         setIsManager(false);
+        setManagerAddress('');
       }
     }
     fetchManager();
@@ -79,50 +83,50 @@ function App() {
       icon: Shield,
       title: "Secure Transactions",
       description: "Built on Algorand's secure and fast blockchain infrastructure",
-      gradient: "from-blue-600 to-cyan-500"
+      gradient: "from-blue-600"
     },
     {
       icon: Zap,
       title: "Lightning Fast",
       description: "Experience near-instant transaction confirmations",
-      gradient: "from-purple-600 to-pink-500"
+      gradient: "from-purple-600"
     },
     {
       icon: TrendingUp,
       title: "Advanced Analytics",
       description: "Track your ASA tokens with comprehensive analytics",
-      gradient: "from-green-600 to-teal-500"
+      gradient: "from-green-600"
     }
   ];
 
   const showDashboard = address && !isNaN(parsedAsaId);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="app-container">
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse delay-2000"></div>
+      <div className="bg-animations">
+        <div className="bg-circle bg-circle-1"></div>
+        <div className="bg-circle bg-circle-2"></div>
+        <div className="bg-circle bg-circle-3"></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 py-8">
+      <div className="main-content">
         {/* Header */}
-        <header className="text-center mb-16">
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-3">
+        <header className="header">
+          <div className="header-logo">
+            <div className="logo-icon">
               <Wallet size={32} className="text-white" />
             </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="main-title">
               ARC 20 TS
             </h1>
           </div>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+          <p className="subtitle">
             Your comprehensive dashboard for managing Algorand Standard Assets with TypeScript precision
           </p>
-          <div className="flex justify-center gap-4 mt-6">
+          <div className="social-links">
             <button
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition-all duration-300 hover:scale-110"
+              className="social-link"
               onClick={() => window.open('https://github.com/lhcee3/arc20-ts', '_blank')}
               title="View on GitHub"
             >
@@ -132,7 +136,7 @@ function App() {
               href="https://x.com/lhcee3"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition-all duration-300 hover:scale-110"
+              className="social-link"
               title="View on X (Twitter)"
             >
               <Twitter size={20} className="text-white" />
@@ -141,7 +145,7 @@ function App() {
         </header>
 
         {/* Connection Section */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-md-2 mb-8">
           <SectionCard title="Connect Wallet">
             <WalletComponent onConnect={setAddress} />
           </SectionCard>
@@ -149,14 +153,14 @@ function App() {
           <SectionCard title="ASA Configuration">
             <AsaInput asaId={asaId} setAsaId={setAsaId} />
             <div className="mt-4">
-              <label className="text-white font-semibold flex items-center gap-3 cursor-pointer">
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={isClawback}
                   onChange={() => setIsClawback((prev) => !prev)}
-                  className="w-5 h-5 rounded bg-white/10 border-2 border-white/30 text-blue-500 focus:ring-blue-500 focus:ring-2"
+                  className="checkbox-input"
                 />
-                <Lock size={20} className="text-white/70" />
+                <Lock size={20} className="text-white-70" />
                 Enable Clawback Mode
               </label>
             </div>
@@ -165,26 +169,26 @@ function App() {
 
         {/* Status Display */}
         {address && (
-          <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-8">
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+          <div className="status-display">
+            <h3 className="status-title">
+              <div className="status-dot"></div>
               Connection Status
             </h3>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
+            <div className="status-grid">
               <div>
-                <span className="text-white/70">Address:</span>
-                <p className="text-white font-mono">{address.slice(0, 8)}...{address.slice(-8)}</p>
+                <span className="status-label">Address:</span>
+                <p className="status-value">{address.slice(0, 8)}...{address.slice(-8)}</p>
               </div>
               {parsedAsaId && (
                 <div>
-                  <span className="text-white/70">ASA ID:</span>
-                  <p className="text-white font-mono">{parsedAsaId}</p>
+                  <span className="status-label">ASA ID:</span>
+                  <p className="status-value">{parsedAsaId}</p>
                 </div>
               )}
               {isManager && (
                 <div>
-                  <span className="text-white/70">Role:</span>
-                  <p className="text-green-400 font-semibold">Manager</p>
+                  <span className="status-label">Role:</span>
+                  <p className="status-value green">Manager</p>
                 </div>
               )}
             </div>
@@ -194,7 +198,7 @@ function App() {
         {/* Main Dashboard Components */}
         {showDashboard && (
           <div className="space-y-6 mb-8">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-md-2">
               <SectionCard title="Balance & Status">
                 <div className="space-y-4">
                   <BalanceDisplay address={address} asaId={parsedAsaId} />
@@ -216,9 +220,9 @@ function App() {
             </SectionCard>
 
             {isManager && (
-              <SectionCard title="Manager Operations" className="border-red-500/30 bg-red-500/10">
-                <div className="bg-red-500/20 rounded-xl p-4 mb-4">
-                  <p className="text-red-200 text-sm">
+              <SectionCard title="Manager Operations" className="warning-section">
+                <div className="warning-box">
+                  <p className="warning-text">
                     ⚠️ Manager-only operations. Use with extreme caution.
                   </p>
                 </div>
@@ -230,9 +234,9 @@ function App() {
 
         {/* Clawback Operations */}
         {isClawback && (
-          <SectionCard title="Clawback Operations" className="border-orange-500/30 bg-orange-500/10">
-            <div className="bg-orange-500/20 rounded-xl p-4 mb-4">
-              <p className="text-orange-200 text-sm">
+          <SectionCard title="Clawback Operations" className="caution-section">
+            <div className="caution-box">
+              <p className="caution-text">
                 ⚠️ Clawback operations require special permissions.
               </p>
             </div>
@@ -249,7 +253,7 @@ function App() {
 
         {/* Features Grid - Only show when not connected */}
         {!showDashboard && (
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-md-3 mb-16">
             {features.map((feature, index) => (
               <FeatureCard key={index} {...feature} />
             ))}
@@ -257,10 +261,18 @@ function App() {
         )}
 
         {/* Footer */}
-        <footer className="text-center py-8 border-t border-white/10 mt-16">
-          <p className="text-white/50">
-            Built with ❤️ for the Algorand ecosystem
-          </p>
+        <footer
+          className="footer mt-8 py-4 px-2 rounded-lg shadow-lg"
+          style={{
+            color: '#0092CA',
+            fontWeight: 600,
+            fontSize: '1.1rem',
+            letterSpacing: '0.02em',
+            textAlign: 'center',
+            boxShadow: '0 2px 16px 0 rgba(0,0,0,0.08)',
+          }}
+        >
+          <span role="img" aria-label="heart"></span> Built with <span className="animate-pulse">love ❤️</span> for the <span style={{ color: '#0092CA', fontWeight: 700 }}>Algorand</span> ecosystem
         </footer>
       </div>
     </div>
